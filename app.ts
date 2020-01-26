@@ -1,55 +1,76 @@
+interface IScalable {
+    getScale():number;
+    getName():string;
+}
+
 class Product {
-    private scale: number=0;
-    private name: string='';
+    protected scale: number=0;
+    protected name: string='';
 
     protected constructor(name:string, scale:number) {
         this.name = name;
         this.scale = scale;
     }
+}
 
-    public getScale():number {
+class Apple extends Product implements IScalable {
+    constructor(scale:number, name:string='Red Apple') {
+        super(name, scale);
+    }
+
+    getScale():number {
         return this.scale;
     }
 
-    public getName():string {
+    getName():string {
         return this.name;
     }
 }
 
-class Apple extends Product {
-    constructor(scale:number, name:string='Red Apple') {
-        super(name, scale);
-    }
-}
-
-class Tomato extends Product {
+class Tomato extends Product implements IScalable {
     constructor(scale:number, name:string='Big Tomato') {
         super(name, scale);
     }
+
+    getScale():number {
+        return this.scale;
+    }
+
+    getName():string {
+        return this.name;
+    }
 }
 
-class Cucumber extends Product {
+class Cucumber extends Product implements IScalable {
     constructor(scale:number, name:string='Small Cucumber') {
         super(name, scale);
+    }
+
+    getScale():number {
+        return this.scale;
+    }
+
+    getName():string {
+        return this.name;
     }
 }
 
 class Scales {
-    private productList: Product[]=[];
+    private productList: IScalable[]=[];
 
     constructor() {}
 
-    public addProduct(product:Product):void {
+    public addProduct(product:IScalable):void {
         this.productList.push(product);
     }
 
     public getSumScale():number {
-        const reducer = (accumulator:number, currentValue: Product):number => accumulator + currentValue.getScale();
+        const reducer = (accumulator:number, currentValue: IScalable):number => accumulator + currentValue.getScale();
         return this.productList.reduce(reducer, 0);
     }
 
     public getNameList():string[] {
-        return this.productList.map((value:Product) => value.getName());
+        return this.productList.map((value:IScalable) => value.getName());
     }
 }
 
