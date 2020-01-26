@@ -44,19 +44,12 @@ class Scales {
     }
 
     public getSumScale():number {
-        var sum:number = 0;
-        for(let i = 0; i < this.productList.length; ++i) {
-            sum += this.productList[i].getScale();
-        }
-        return sum;
+        const reducer = (accumulator:number, currentValue: Product):number => accumulator + currentValue.getScale();
+        return this.productList.reduce(reducer, 0);
     }
 
     public getNameList():string[] {
-        var list:string[]=[];
-        for(let i = 0; i < this.productList.length; ++i) {
-            list.push(this.productList[i].getName());
-        }
-        return list;
+        return this.productList.map((value:Product) => value.getName());
     }
 }
 
