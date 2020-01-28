@@ -51,28 +51,27 @@ class ScalesStorageEngineArray implements IStorageEngine {
 class ScalesStorageEngineLocalStorage implements IStorageEngine {
     private data = localStorage;
     private token:number = 0;
-    private products:Array<Product> = [];
 
     constructor() { }
 
     addItem(item:Product) {
         this.data.setItem(this.token.toString(), JSON.stringify(item));
-        this.products.push(item);
         this.token++;
     }
 
     getItem(index:number) {
         let obj = JSON.parse(this.data.getItem(index.toString()));
-        if(!obj) throw 'Index does not exist';
         return new Product(obj['name'], obj['scale']);
     }
 
     getCount() {
-        return this.products.length;
+        return this.token - 1;
     }
 
     get items():Array<Product> {
-        return this.products;
+        let dataArray: Product[] = [];
+        for(let i = 0; i < this.token; ++i) dataArray.push(this.getItem(i));
+        return dataArray;
     }
 }
 
@@ -122,4 +121,5 @@ scales2.addProduct(product2);
 console.log('scales2: ', scales2.getSumScale(), scales2.getNameList());
 scales2.addProduct(product3);
 scales2.addProduct(product3);
+scales2.addProduct(product4);
 console.log('scales2: ', scales2.getSumScale(), scales2.getNameList());
