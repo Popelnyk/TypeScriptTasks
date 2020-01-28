@@ -50,28 +50,27 @@ class ScalesStorageEngineArray implements IStorageEngine {
 
 class ScalesStorageEngineLocalStorage implements IStorageEngine {
     private data = localStorage;
-    private token:number = 0;
-
-    constructor() { }
+    private products:Array<Product> = [];
+    constructor(private token:string) { }
 
     addItem(item:Product) {
-        this.data.setItem(this.token.toString(), JSON.stringify(item));
-        this.token++;
+        this.data.removeItem(this.token);
+        this.products.push(item);
+        this.data.setItem(this.token, JSON.stringify(this.products));
     }
 
     getItem(index:number) {
-        let obj = JSON.parse(this.data.getItem(index.toString()));
-        return new Product(obj['name'], obj['scale']);
+        let rawData = JSON.parse(this.data.getItem(this.token));
+        if(index >= rawData.length) throw 'index out of array';
+        return new Product(rawData[index]['name'], rawData[index]['scale']);
     }
 
     getCount() {
-        return this.token - 1;
+        return this.products.length;
     }
 
     get items():Array<Product> {
-        let dataArray: Product[] = [];
-        for(let i = 0; i < this.token; ++i) dataArray.push(this.getItem(i));
-        return dataArray;
+        return this.products;
     }
 }
 
@@ -97,11 +96,12 @@ class Scales<StorageEngine extends IStorageEngine> {
 }
 
 const engineArray = new ScalesStorageEngineArray();
-const localstorage = new ScalesStorageEngineLocalStorage();
+const localstorage1 = new ScalesStorageEngineLocalStorage('14fZf5');
+const localstorage2 = new ScalesStorageEngineLocalStorage('eeiK94');
 
 const scales1 = new Scales<ScalesStorageEngineArray>(engineArray);
-const scales2 = new Scales<ScalesStorageEngineLocalStorage>(localstorage);
-
+const scales2 = new Scales<ScalesStorageEngineLocalStorage>(localstorage1);
+const scales3 = new Scales<ScalesStorageEngineLocalStorage>(localstorage2);
 
 let product1:Product = new Product('Apple', 10), product2:Product = new Product('Tomato', 5.4), 
     product3:Product = new Product('Cucumber', 12.9), product4:Product = new Product('Onion', 3);
@@ -123,3 +123,13 @@ scales2.addProduct(product3);
 scales2.addProduct(product3);
 scales2.addProduct(product4);
 console.log('scales2: ', scales2.getSumScale(), scales2.getNameList());
+
+
+console.log('scales3: ', scales3.getSumScale(), scales3.getNameList());
+scales3.addProduct(product4);
+scales3.addProduct(product4);
+console.log('scales3: ', scales3.getSumScale(), scales3.getNameList());
+scales3.addProduct(product2);
+scales3.addProduct(product2);
+scales3.addProduct(product1);
+console.log('scales3: ', scales3.getSumScale(), scales3.getNameList());
