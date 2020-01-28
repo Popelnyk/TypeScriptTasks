@@ -63,6 +63,7 @@ class ScalesStorageEngineLocalStorage implements IStorageEngine {
 
     getItem(index:number) {
         let obj = JSON.parse(this.data.getItem(index.toString()));
+        if(!obj) throw 'Index does not exist';
         return new Product(obj['name'], obj['scale']);
     }
 
