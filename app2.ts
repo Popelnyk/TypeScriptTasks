@@ -50,13 +50,20 @@ class ScalesStorageEngineArray implements IStorageEngine {
 
 class ScalesStorageEngineLocalStorage implements IStorageEngine {
     private data = localStorage;
-    private products:Array<Product> = [];
     constructor(private token:string) { }
 
     addItem(item:Product) {
-        this.data.removeItem(this.token);
-        this.products.push(item);
-        this.data.setItem(this.token, JSON.stringify(this.products));
+        let rawData = JSON.parse(this.data.getItem(this.token));
+        if(!rawData) {
+            let products:Array<Product> = [item];
+            this.data.setItem(this.token, JSON.stringify(products));
+        }
+        else {
+            this.data.removeItem(this.token);
+            let dataArray = rawData.map((value:any) => new Product(value['name'], value['scale']));
+            dataArray.push(item);
+            this.data.setItem(this.token, JSON.stringify(dataArray));
+        }
     }
 
     getItem(index:number) {
@@ -66,11 +73,13 @@ class ScalesStorageEngineLocalStorage implements IStorageEngine {
     }
 
     getCount() {
-        return this.products.length;
+        return (JSON.parse(this.data.getItem(this.token))).length;
     }
 
     get items():Array<Product> {
-        return this.products;
+        let rawData = JSON.parse(this.data.getItem(this.token));
+        if(!rawData) rawData = [];
+        return rawData.map((value:any) => new Product(value['name'], value['scale']));
     }
 }
 
